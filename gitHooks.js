@@ -1,1 +1,1 @@
-console.log(process)>>log.txt
+console.log(process)>>"log.txt"

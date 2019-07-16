@@ -24,4 +24,19 @@ githooks设置示例
     为测试环境、预发布环境设置专用发布分支：test、preRelease
     ```
   1. 问题 2：上线后忘记合并到 master
+    jenkins 部署成功之后(release+npm run product)，合并开发分支到 master 并 push。并发送邮件
   1. 问题 3：频繁手动切换分支易出错
+    愿景：
+    开发者只需要在功能分支开发代码，功能完成后 push；push 环节执行 git hook，自动将开发分支合并到 test 和 preRelease 分支并 push
+    引申问题：未达到测试标准的代码进入了测试和预发布流程
+    实现：
+    ```
+    1、 功能分支开发完，执行 commit
+    2、 commit 之后执行 post-commit 钩子
+    3、 post-commit钩子执行 功能分支合并到 test和 preBuild 分支操作
+    4、 用户手动 push，选择要将哪些分支 push 到 origin：测试阶段只push 功能分支和 test，预发布阶段 push 功能分支、test 和 preRelease 分支
+    ```
+
+# 实现方法
+1. 直接使用 GIT_DIR/.hooks 里的钩子，通过 shell 来实现功能
+2. 使用 nodejs 来编程实现（husky,[yorkie](https://github.com/yyx990803/yorkie))

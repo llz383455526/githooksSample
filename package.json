@@ -1,5 +1,5 @@
 {
-  "name": "githooksSample",
+  "name": "git_hook_sample",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,11 +10,17 @@
     "type": "git",
     "url": "git+https://github.com/llz383455526/githooksSample.git"
   },
+  "gitHooks": {
+    "pre-commit": "gitHooks.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/llz383455526/githooksSample/issues"
   },
-  "homepage": "https://github.com/llz383455526/githooksSample#readme"
+  "homepage": "https://github.com/llz383455526/githooksSample#readme",
+  "dependencies": {
+    "yorkie": "^2.0.0"
+  }
 }

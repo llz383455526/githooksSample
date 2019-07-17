@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/llz383455526/githooksSample#readme",
   "dependencies": {
+    "simple-git": "^1.121.0",
     "yorkie": "^2.0.0"
   }
 }

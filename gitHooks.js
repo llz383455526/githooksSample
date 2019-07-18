@@ -17,7 +17,8 @@ function gitMerge(from, to){
     // }
 
     /** 合并当前分支到 92Test */
-    gitMerge('master', '92Test')
+    // gitMerge('master', '92Test')
+    console.log(await simpleGit.stash(['pop']))
     console.log(branchResult)
   }
 )()

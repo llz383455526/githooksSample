@@ -1,8 +1,11 @@
 const simpleGit = require('simple-git/promise')();
-const util = require('util');
 
 function gitMerge(from, to){
-  simpleGit.mergeFromTo(from, to)
+  simpleGit.mergeFromTo(from, to).then(result=>{
+    console.log(result)
+  }, error=>{
+    console.log(error)
+  })
 }
 
 (
@@ -19,7 +22,8 @@ function gitMerge(from, to){
     /** 合并当前分支到 92Test */
     // gitMerge('master', '92Test')
     console.log(await simpleGit.stash(['pop']))
-    console.log(branchResult)
+    // gitMerge('master', '92Test')
+    // console.log(branchResult)
   }
 )()
 

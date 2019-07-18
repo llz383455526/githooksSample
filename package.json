@@ -11,7 +11,7 @@
     "url": "git+https://github.com/llz383455526/githooksSample.git"
   },
   "gitHooks": {
-    "post-commit": "node gitHooks.js"
+    // "post-commit": "node gitHooks.js"
   },
   "keywords": [],
   "author": "",

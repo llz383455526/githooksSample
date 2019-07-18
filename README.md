@@ -40,3 +40,7 @@ githooks设置示例
 # 实现方法
 1. 直接使用 GIT_DIR/.hooks 里的钩子，通过 shell 来实现功能
 2. 使用 nodejs 来编程实现（husky,[yorkie](https://github.com/yyx990803/yorkie))
+
+"gitHooks": {
+    // "post-commit": "node gitHooks.js"
+  },

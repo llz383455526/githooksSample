@@ -10,36 +10,52 @@ function gitMerge(from, to){
 
 (
   async function(){
-    const branchResult = await Promise.all([simpleGit.branchLocal(),simpleGit.branch()]);
-    let branchSummaryLocal = branchResult[0]
-    let branchSummaryAll = branchResult[1]
-  
-    /** master 分支改变不做处理 */
-    // if(branchSummaryLocal.current === "master"){
-    //   return
-    // }
+    try {
+      const branchResult = await Promise.all([simpleGit.branchLocal(),simpleGit.branch()]);
+      let branchSummaryLocal = branchResult[0]
+      let branchSummaryAll = branchResult[1]
+    
+      /** master 分支改变不做处理 */
+      // if(branchSummaryLocal.current === "master"){
+      //   return
+      // }
 
-    const statusSummary = await simpleGit.status()
-    console.log(statusSummary)
-    /**
-     * 1. stash 如果存在未 add 代码，则stash当前未提交部分
-     */
-    // if(statusSummary)
-    // await simpleGit.stash()
+      const statusSummary = await simpleGit.status()
+      /**
+       * 1. stash 如果存在未 add/commit 代码，则stash当前未提交部分
+       */
+      // let needStash = false
+      // if(statusSummary.files.length){
+      //   needStash = true
+      //   await simpleGit.stash()
+      // }
 
+      /** 
+       * 2. 合并当前工作分支到 92Test,preRelease
+      */
+     try {
+      let mergeResult = await simpleGit.mergeFromTo(branchSummaryLocal.current, '92Test')
+      console.log(mergeResult)
+     } catch (error) {
+       console.log('合并出错：'+error);
+     }
+      
+      /** 
+       * 1_end. stash pop最新一次 stash
+      */
+    //  if(needStash && !!simpleGit.stash['show']){
+    //     await simpleGit.stash(['pop'])
+    //  }
+    
 
-    /** 
-     * 1_end. stash pop最新一次 stash
-    */
-  //  if(!!simpleGit.stash['show']){
-  //     await simpleGit.stash(['pop'])
-  //  }
-  
-
-    /** 合并当前分支到 92Test */
-    // gitMerge('master', '92Test')
-    // gitMerge('master', '92Test')
-    // console.log(branchResult)
+      /** 合并当前分支到 92Test */
+      // gitMerge('master', '92Test')
+      // gitMerge('master', '92Test')
+      // console.log(branchResult)
+    } catch (error) {
+      console.log(error)
+    }
+    
   }
 )()
 

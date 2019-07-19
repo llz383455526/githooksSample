@@ -14,16 +14,19 @@ async function mergeAndPush(workBranch, targetBranch){
     }
 
     try {
-      console.log(chalk.green(` >>>>准备合并到${targetBranch}分支，git-checkout ${targetBranch}分支`));
       await simpleGit.checkout(targetBranch)
+      console.log(chalk.green(` >>>>准备合并到${targetBranch}分支，git-checkout ${targetBranch}分支`))
       
-      console.log(chalk.green(` >>>>合并${workBranch}到${targetBranch}`))
       let options=['--ff']  // fast-forward 合并
       options.push(workBranch)
       await simpleGit.merge(options)
-
-      console.log(chalk.green(` >>>>合并完成，push${targetBranch}分支到origin`))
-      await simpleGit.push()
+      console.log(chalk.green(` >>>>合并${workBranch}到${targetBranch}`))
+      
+      simpleGit.push().then(result=>{
+        console.log(chalk.green(` >>>>合并完成，push ${targetBranch}分支到origin`))
+      }).catch(error=>{
+        console.log(chalk.red(`push ${targetBranch}分支出错：${error}`))
+      })
       
       await simpleGit.checkout(workBranch)
       console.log(chalk.green(` >>>>完成，工作分支已重置为${workBranch}`))

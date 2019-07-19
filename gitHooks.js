@@ -1,64 +1,74 @@
 const simpleGit = require('simple-git/promise')();
+const chalk = require('chalk')
+/**
+ * 将 workBranch 合并到 targetBranch 并 push
+ * @param {*} workBranch 
+ * @param {*} targetBranch 
+ */
+async function mergeAndPush(workBranch, targetBranch){
+    // 检测 targetBranch 是否存在
+    const branchSummary = await simpleGit.branch()
+    if(!branchSummary.branches[targetBranch]) {
+      console.log(chalk.red(`分支:${targetBranch}不存在！`))
+      return
+    }
 
-function gitMerge(from, to){
-  simpleGit.mergeFromTo(from, to).then(result=>{
-    console.log(result)
-  }, error=>{
-    console.log(error)
-  })
+    try {
+      await simpleGit.checkout(targetBranch)
+      let options=['--ff']  // fast-forward 合并
+      options.push(workBranch)
+      await simpleGit.merge(options)
+      await simpleGit.push()
+      await simpleGit.checkout(workBranch)
+      console.log(chalk.green(`合并分支:${workBranch}到分支:${targetBranch}完成`));
+     } catch (error) {
+       console.log(`合并分支:${workBranch}到分支:${targetBranch}出错-->${error}`)
+    }
 }
 
-(
-  async function(){
+
+
+  async function main() {
+    let needStash = false
     try {
-      const branchResult = await Promise.all([simpleGit.branchLocal(),simpleGit.branch()]);
-      let branchSummaryLocal = branchResult[0]
-      let branchSummaryAll = branchResult[1]
-    
+      const branchSummaryLocal = await simpleGit.branchLocal()
+      let workBranch = branchSummaryLocal.current; //当前工作分支
+      console.log(chalk.green(`>>>开始自动合并，当前工作分支：${workBranch}`))
       /** master 分支改变不做处理 */
       // if(branchSummaryLocal.current === "master"){
+      //    console.log(chalk.red('master分支操作不会执行自动合并'))
       //   return
       // }
 
-      const statusSummary = await simpleGit.status()
       /**
        * 1. stash 如果存在未 add/commit 代码，则stash当前未提交部分
        */
-      // let needStash = false
-      // if(statusSummary.files.length){
-      //   needStash = true
-      //   await simpleGit.stash()
-      // }
+      const statusSummary = await simpleGit.status()
+      
+      if(statusSummary.files.length){
+        needStash = true
+        let stashResult = await simpleGit.stash()
+        console.log(chalk.green(`发现未提交代码，执行stash-->:${stashResult}`));
+      }
 
       /** 
        * 2. 合并当前工作分支到 92Test,preRelease
+       * 2.1 合并前，必须要切换到目标分支(保存场景：1、当前工作分支)
       */
-     try {
-      let mergeResult = await simpleGit.mergeFromTo(branchSummaryLocal.current, '92Test')
-      console.log(mergeResult)
-     } catch (error) {
-       console.log('合并出错：'+error);
+     
+     await mergeAndPush(workBranch, '92Test')
+     await mergeAndPush(workBranch, 'preRelease')
+     if(needStash && await simpleGit.stash('show')){
+        await simpleGit.stash(['pop'])
      }
-      
-      /** 
-       * 1_end. stash pop最新一次 stash
-      */
-    //  if(needStash && !!simpleGit.stash['show']){
-    //     await simpleGit.stash(['pop'])
-    //  }
+     console.log(chalk.green(`工作分支已重置为${workBranch}, continue coding!`));
     
-
-      /** 合并当前分支到 92Test */
-      // gitMerge('master', '92Test')
-      // gitMerge('master', '92Test')
-      // console.log(branchResult)
     } catch (error) {
-      console.log(error)
+      console.log(chalk.red(`出错：${error}`))
+      if(needStash && !!simpleGit.stash['show']){
+        await simpleGit.stash(['pop'])
+     }
     }
-    
   }
-)()
 
-/**问题 1：如何处理部分提交的场景，需要 stash 之后，再讲当前分支合并？
- * simpleGit
- */
+  main()

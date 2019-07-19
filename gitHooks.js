@@ -14,26 +14,30 @@ async function mergeAndPush(workBranch, targetBranch){
     }
 
     try {
+      console.log(chalk.green(` >>>>准备合并到${targetBranch}分支，git-checkout ${targetBranch}分支`));
       await simpleGit.checkout(targetBranch)
+      
+      console.log(chalk.green(` >>>>合并${workBranch}到${targetBranch}`))
       let options=['--ff']  // fast-forward 合并
       options.push(workBranch)
       await simpleGit.merge(options)
+
+      console.log(chalk.green(` >>>>合并完成，push${targetBranch}分支到origin`))
       await simpleGit.push()
+      
       await simpleGit.checkout(workBranch)
-      console.log(chalk.green(`合并分支:${workBranch}到分支:${targetBranch}完成`));
+      console.log(chalk.green(` >>>>完成，工作分支已重置为${workBranch}`))
      } catch (error) {
-       console.log(`合并分支:${workBranch}到分支:${targetBranch}出错-->${error}`)
+       console.log(chalk.red(`合并${workBranch}到${targetBranch}出错-->${error}`))
     }
 }
-
-
 
   async function main() {
     let needStash = false
     try {
       const branchSummaryLocal = await simpleGit.branchLocal()
       let workBranch = branchSummaryLocal.current; //当前工作分支
-      console.log(chalk.green(`>>>开始自动合并，当前工作分支：${workBranch}`))
+      console.log(chalk.cyan(`>>>开始自动合并，当前工作分支：${workBranch}`))
       /** master 分支改变不做处理 */
       // if(branchSummaryLocal.current === "master"){
       //    console.log(chalk.red('master分支操作不会执行自动合并'))
@@ -58,16 +62,19 @@ async function mergeAndPush(workBranch, targetBranch){
      
      await mergeAndPush(workBranch, '92Test')
      await mergeAndPush(workBranch, 'preRelease')
+
      if(needStash && await simpleGit.stash('show')){
         await simpleGit.stash(['pop'])
+        console.log(chalk.green(`在${workBranch}分支上执行 git-stash pop 操作`))
      }
-     console.log(chalk.green(`工作分支已重置为${workBranch}, continue coding!`));
-    
+     console.log(chalk.cyan(`>>>finshed, enjoy coding!`))
     } catch (error) {
-      console.log(chalk.red(`出错：${error}`))
-      if(needStash && !!simpleGit.stash['show']){
+      if(needStash && await simpleGit.stash('show')){
         await simpleGit.stash(['pop'])
-     }
+        console.log(chalk.red(`eroor：${error},执行回滚操作`))
+      } else {
+        console.log(chalk.red(`error：${error}`))
+      }
     }
   }
 

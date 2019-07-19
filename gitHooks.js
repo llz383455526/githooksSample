@@ -1,3 +1,8 @@
+/**
+ * gitHooks
+ * @description git commit后触发该 githook, 自动将当前分支合并到指定分支上（默认 92Test和 preRelease 分支），并 push 到 origin
+ * @argv 接收的参数表示自定义需要将当前分支合并到哪些分支上
+ */
 const simpleGit = require('simple-git/promise')();
 const chalk = require('chalk')
 
@@ -7,6 +12,27 @@ if (argv.length >0 ){
   targetBranchArray = argv
 }
 
+/**
+ *  执行异步任务，并模拟进度提示
+ * @param {string} logMsg 
+ * @param  {...any} funcParaArray 
+ */
+async function doJobWithProgress(logMsg, ...funcParaArray){
+  console.log(logMsg)
+
+  let countTimer = 0;
+  const delay = 500;
+  let fd = setInterval(() => {
+    process.stdout.write('.')
+    countTimer += delay
+    if(countTimer >= delay*60*20) {
+      clearInterval(fd)
+    }
+  }, delay)
+  await this(funcParaArray)
+  process.stdout.write('\n')
+  clearInterval(fd)
+}
 /**
  * 将 workBranch 合并到 targetBranch 并 push
  * @param {*} workBranch 
@@ -25,8 +51,10 @@ async function task_merge(workBranch, targetBranch){
       console.log(chalk.green(` >>>>准备合并到${targetBranch}分支`))
       console.log(chalk.green(`     切换本地分支为：${targetBranch}`))
       
-      await simpleGit.pull()
-      console.log(chalk.green(`     更新分支${targetBranch}到最新`))
+    
+      await doJobWithProgress.call(simpleGit.pull, 
+        chalk.green(`     更新分支${targetBranch}到最新`))
+      
       
       let options=['--ff']  // fast-forward 合并
       options.push(workBranch)

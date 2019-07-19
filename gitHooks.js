@@ -22,7 +22,8 @@ async function task_merge(workBranch, targetBranch){
 
     try {
       await simpleGit.checkout(targetBranch)
-      console.log(chalk.green(` >>>>准备合并到${targetBranch}分支，git-checkout ${targetBranch}分支`))
+      console.log(chalk.green(` >>>>准备合并到${targetBranch}分支`))
+      console.log(chalk.green(`     切换本地分支为：${targetBranch}`))
       
       await simpleGit.pull()
       console.log(chalk.green(`     更新分支${targetBranch}到最新`))

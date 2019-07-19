@@ -17,6 +17,8 @@ async function mergeAndPush(workBranch, targetBranch){
       await simpleGit.checkout(targetBranch)
       console.log(chalk.green(` >>>>准备合并到${targetBranch}分支，git-checkout ${targetBranch}分支`))
       
+      await simpleGit.pull()
+      console.log(chalk.green(` >>>>更新分支${workBranch}`))
       let options=['--ff']  // fast-forward 合并
       options.push(workBranch)
       await simpleGit.merge(options)
@@ -32,6 +34,7 @@ async function mergeAndPush(workBranch, targetBranch){
       console.log(chalk.green(` >>>>完成，工作分支已重置为${workBranch}`))
      } catch (error) {
        console.log(chalk.red(`合并${workBranch}到${targetBranch}出错-->${error}`))
+       throw error
     }
 }
 
@@ -48,7 +51,7 @@ async function mergeAndPush(workBranch, targetBranch){
       // }
 
       /**
-       * 1. stash 如果存在未 add/commit 代码，则stash当前未提交部分
+       * 1. stash 如果存在未 add/commit 代码，则stash未提交部分
        */
       const statusSummary = await simpleGit.status()
       

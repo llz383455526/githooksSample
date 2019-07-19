@@ -2,6 +2,8 @@
  * gitHooks
  * @description git commit后触发该 githook, 自动将当前分支合并到指定分支上（默认 92Test和 preRelease 分支），并 push 到 origin
  * @argv 接收的参数表示自定义需要将当前分支合并到哪些分支上
+ * 
+ * @warn 如果工作分支未 master 则不做处理
  */
 const simpleGit = require('simple-git/promise')();
 const chalk = require('chalk')

@@ -36,11 +36,10 @@ githooks设置示例
     3、 post-commit钩子执行 功能分支合并到 test和 preBuild 分支操作
     4、 用户手动 push，选择要将哪些分支 push 到 origin：测试阶段只push 功能分支和 test，预发布阶段 push 功能分支、test 和 preRelease 分支
     ```
+  1. 问题 4：合并前更新当前分支比较耗时
+    解决办法：先判断是否需要更新？
+  1. 问题 5：git push 比较耗时，如果要合并到多个分支上会比较慢
 
 # 实现方法
 1. 直接使用 GIT_DIR/.hooks 里的钩子，通过 shell 来实现功能
 2. 使用 nodejs 来编程实现（husky,[yorkie](https://github.com/yyx990803/yorkie))
-
-"gitHooks": {
-    // "post-commit": "node gitHooks.js"
-  },

@@ -25,15 +25,14 @@ async function task_merge(workBranch, targetBranch){
       console.log(chalk.green(` >>>>准备合并到${targetBranch}分支，git-checkout ${targetBranch}分支`))
       
       await simpleGit.pull()
-      console.log(chalk.green(` >>>>更新分支${targetBranch}到最新`))
+      console.log(chalk.green(`     更新分支${targetBranch}到最新`))
       
       let options=['--ff']  // fast-forward 合并
       options.push(workBranch)
       await simpleGit.merge(options)
-      console.log(chalk.green(` >>>>合并${workBranch}到${targetBranch}`))
       
       await simpleGit.checkout(workBranch)
-      console.log(chalk.green(` >>>>完成，工作分支已重置为${workBranch}`))
+      console.log(chalk.green(` <<<<合并${workBranch}到${targetBranch}完成，工作分支已重置为${workBranch}`))
      } catch (error) {
        console.log(chalk.red(`合并${workBranch}到${targetBranch}出错-->${error}`))
        throw error
@@ -49,17 +48,10 @@ async function task_push(){
   })
 
   simpleGit.push(options).then(() => {
-    console.log(chalk.green(` >>>>push 下列分支${targetBranchArray}到origin`))
+    console.log(chalk.green(`----push分支:${targetBranchArray}到origin`))
   }).catch(error => {
-    console.log(chalk.red(`push 下列分支${targetBranchArray}到origin出错：error`))
+    console.log(chalk.red(`----push分支${targetBranchArray}到origin出错：error`))
   })
-  // try {
-  //   await simpleGit.push(options)
-    
-  // } catch(error) {
-    
-  // }
-  
 }
 async function main() {
   let needStash = false

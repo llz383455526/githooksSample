@@ -97,7 +97,7 @@ async function main() {
     /** master分支与目标分支上的操作不触发自动合并提交流程 */
     let ignoreBranchs = targetBranchArray.concat('master')
     let isTrue = ignoreBranchs.some((branch) => {
-      return branchSummaryLocal.current === workBranch  
+      return workBranch === branch  
     }) 
     if (isTrue){
       console.log(chalk.red(`${workBranch}分支操作不会执行自动合并`))

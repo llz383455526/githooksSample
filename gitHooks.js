@@ -20,8 +20,11 @@ if (argv.length >0 ){
  * @param  {...any} funcParaArray 
  */
 async function doJobWithProgress(logMsg, ...funcParaArray){
+  if(typeof this != 'function'){
+    throw new Error('doJobWithProgress 只能用于执行异步方法') 
+  }
+  
   console.log(logMsg)
-
   let countTimer = 0;
   const delay = 500;
   let fd = setInterval(() => {

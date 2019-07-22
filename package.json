@@ -1,7 +1,7 @@
 {
-  "name": "git_hook_sample",
+  "name": "hm-githook",
   "version": "1.0.0",
-  "description": "",
+  "description": "githook for open admin/console,auto merge and publish",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,10 +11,10 @@
     "url": "git+https://github.com/llz383455526/githooksSample.git"
   },
   "gitHooks": {
-    "post-commit": "node gitHooks.js"
+    "post-commit": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "ayg fe",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/llz383455526/githooksSample/issues"

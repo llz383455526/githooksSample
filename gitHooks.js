@@ -2,8 +2,8 @@
  * gitHooks
  * @description git commit后触发该 githook, 自动将当前分支合并到指定分支上，并 push 到 origin
  * *****注意：目标分支建议如下设置*****
- * 开发阶段可设置为： 92Test
- * 预发布阶段可设置为：92Test和 preRelease 
+ * 开发阶段可设置为： test_92
+ * 预发布阶段可设置为：test_92和 preRelease 
  * @argv 接收的参数表示自定义需要将当前分支合并到哪些分支上
  * 
  * @warn 如果工作分支未 master 则不做处理
@@ -11,7 +11,7 @@
 const simpleGit = require('simple-git/promise')();
 const chalk = require('chalk')
 
-let targetBranchArray=['92Test'] // 默认认为是开发阶段
+let targetBranchArray=['test_92'] // 默认认为是开发阶段
 let argv=process.argv.slice(2)
 if (argv.length >0 ){
   targetBranchArray = argv

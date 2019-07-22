@@ -1,6 +1,9 @@
 /**
  * gitHooks
- * @description git commit后触发该 githook, 自动将当前分支合并到指定分支上（默认 92Test和 preRelease 分支），并 push 到 origin
+ * @description git commit后触发该 githook, 自动将当前分支合并到指定分支上，并 push 到 origin
+ * *****注意：目标分支建议如下设置*****
+ * 开发阶段可设置为： 92Test
+ * 预发布阶段可设置为：92Test和 preRelease 
  * @argv 接收的参数表示自定义需要将当前分支合并到哪些分支上
  * 
  * @warn 如果工作分支未 master 则不做处理
@@ -8,7 +11,7 @@
 const simpleGit = require('simple-git/promise')();
 const chalk = require('chalk')
 
-let targetBranchArray=['92Test', 'preRelease']
+let targetBranchArray=['92Test'] // 默认认为是开发阶段
 let argv=process.argv.slice(2)
 if (argv.length >0 ){
   targetBranchArray = argv
@@ -30,7 +33,7 @@ async function doJobWithProgress(logMsg, ...funcParaArray){
   let fd = setInterval(() => {
     process.stdout.write('.')
     countTimer += delay
-    if(countTimer >= delay*60*20) {
+    if(countTimer >= delay*60*20) { //10 minute
       clearInterval(fd)
     }
   }, delay)
@@ -56,10 +59,8 @@ async function task_merge(workBranch, targetBranch){
       console.log(chalk.green(` >>>>准备合并到${targetBranch}分支`))
       console.log(chalk.green(`     切换本地分支为：${targetBranch}`))
       
-    
       await doJobWithProgress.call(simpleGit.pull, 
         chalk.green(`     更新分支${targetBranch}到最新`))
-      
       
       let options=['--ff']  // fast-forward 合并
       options.push(workBranch)
@@ -92,13 +93,18 @@ async function main() {
   try {
     const branchSummaryLocal = await simpleGit.branchLocal()
     let workBranch = branchSummaryLocal.current; //当前工作分支
-    console.log(chalk.cyan(`>>>开始自动合并，当前工作分支：${workBranch}`))
-    /** master 分支改变不做处理 */
-    // if(branchSummaryLocal.current === "master"){
-    //    console.log(chalk.red('master分支操作不会执行自动合并'))
-    //   return
-    // }
 
+    /** master分支与目标分支上的操作不触发自动合并提交流程 */
+    let ignoreBranchs = targetBranchArray.push('master')
+    let isTrue = ignoreBranchs.some((branch) => {
+      return branchSummaryLocal.current === workBranch  
+    }) 
+    if (isTrue){
+      console.log(chalk.red(`${workBranch}分支操作不会执行自动合并`))
+      return
+    }
+
+    console.log(chalk.cyan(`>>>开始自动合并，当前工作分支：${workBranch}`))
     /**
      * 1. stash 如果存在未 add/commit 代码，则stash未提交部分
      */
@@ -111,7 +117,7 @@ async function main() {
     }
 
     /** 
-     * 2. 合并当前工作分支到 92Test,preRelease
+     * 2. 合并当前工作分支到 目标分支
      * 2.1 合并前，必须要切换到目标分支(保存场景：1、当前工作分支)
     */
    for(let targetBranch of targetBranchArray) {

@@ -23,7 +23,7 @@ githooks设置示例
     ```
     为测试环境、预发布环境设置专用发布分支：test、preRelease
     ```
-  1. 问题 2：上线后忘记合并到 master
+  1. 问题 2：上线后忘记合并到 master(todo)
     jenkins 部署成功之后(release+npm run product)，合并开发分支到 master 并 push。并发送邮件
   1. 问题 3：频繁手动切换分支易出错
     愿景：
@@ -31,14 +31,15 @@ githooks设置示例
     引申问题：未达到测试标准的代码进入了测试和预发布流程
     实现：
     ```
-    1、 功能分支开发完，执行 commit
-    2、 commit 之后执行 post-commit 钩子
-    3、 post-commit钩子执行 功能分支合并到 test和 preBuild 分支操作
-    4、 用户手动 push，选择要将哪些分支 push 到 origin：测试阶段只push 功能分支和 test，预发布阶段 push 功能分支、test 和 preRelease 分支
+    1、 功能分支开发完，执行 commit\push
+    2、 push 之后执行 post-push 钩子
+    3、 post-push钩子执行: 将功能分支合并到 目标分支（默认 92Test，可自定义如：92Test 和 preRelease)
+    4、 合并完成后自动 push 目标分支
     ```
   1. 问题 4：合并前更新当前分支比较耗时
     解决办法：先判断是否需要更新？
   1. 问题 5：git push 比较耗时，如果要合并到多个分支上会比较慢
+    解决办法：每个分支单独合并，然后统一 push。
 
 # 实现方法
 1. 直接使用 GIT_DIR/.hooks 里的钩子，通过 shell 来实现功能

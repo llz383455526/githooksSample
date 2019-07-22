@@ -27,13 +27,12 @@ githooks设置示例
     jenkins 部署成功之后(release+npm run product)，合并开发分支到 master 并 push。并发送邮件
   1. 问题 3：频繁手动切换分支易出错
     愿景：
-    开发者只需要在功能分支开发代码，功能完成后 push；push 环节执行 git hook，自动将开发分支合并到 test 和 preRelease 分支并 push
-    引申问题：未达到测试标准的代码进入了测试和预发布流程
+    开发者只需要在功能分支开发代码，功能完成后 commit/push；commit环节执行 git hook，自动将开发分支合并到目标分支并 push
     实现：
     ```
     1、 功能分支开发完，执行 commit\push
-    2、 push 之后执行 post-push 钩子
-    3、 post-push钩子执行: 将功能分支合并到 目标分支（默认 92Test，可自定义如：92Test 和 preRelease)
+    2、 commit 之后执行 post-commit 钩子
+    3、 post-commit钩子完成: 将功能分支合并到 目标分支（默认 92Test，可自定义如：92Test 和 preRelease)
     4、 合并完成后自动 push 目标分支
     ```
   1. 问题 4：合并前更新当前分支比较耗时

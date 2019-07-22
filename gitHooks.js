@@ -95,7 +95,7 @@ async function main() {
     let workBranch = branchSummaryLocal.current; //当前工作分支
 
     /** master分支与目标分支上的操作不触发自动合并提交流程 */
-    let ignoreBranchs = targetBranchArray.push('master')
+    let ignoreBranchs = targetBranchArray.concat('master')
     let isTrue = ignoreBranchs.some((branch) => {
       return branchSummaryLocal.current === workBranch  
     }) 

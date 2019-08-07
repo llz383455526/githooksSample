@@ -11,12 +11,13 @@
 const simpleGit = require('simple-git/promise')();
 const chalk = require('chalk')
 
-let targetBranchArray=['test_92'] // 默认认为是开发阶段
+let targetBranchArray=[] 
 let argv=process.argv.slice(2)
-if (argv.length >0 ){
-  targetBranchArray = argv
+if (argv.length == 0 ){
+  console.log(chalk.red('执行参数不能为空！请设置目标分支！'));
+  return
 }
-
+targetBranchArray = argv
 /**
  *  执行异步任务，并模拟进度提示
  * @param {string} logMsg 

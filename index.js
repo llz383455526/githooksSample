@@ -122,7 +122,7 @@ async function main() {
     await task_merge(workBranch, targetBranch)
    }
 
-    task_push()
+    await task_push()
 
     if(needStash && await simpleGit.stash('show')){
       await simpleGit.stash(['pop'])

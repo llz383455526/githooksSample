@@ -1,6 +1,6 @@
 {
   "name": "hm-githook",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "githook for open admin/console,auto merge and publish",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/llz383455526/githooksSample.git"
   },
   "gitHooks": {
-    "post-commit": "node index.js"
+    "post-commit": "node index.js preRelease"
   },
   "keywords": [],
   "author": "ayg fe",

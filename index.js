@@ -6,7 +6,7 @@
  * 预发布阶段可设置为：test_92和 preRelease 
  * @argv 接收的参数表示自定义需要将当前分支合并到哪些分支上
  * 
- * @warn 如果工作分支未 master 则不做处理
+ * @warn 如果工作分支为 master 则不做处理
  */
 const simpleGit = require('simple-git/promise')();
 const chalk = require('chalk')
@@ -17,7 +17,8 @@ if (argv.length == 0 ){
   console.log(chalk.red('执行参数不能为空！请设置目标分支！'));
   return
 }
-targetBranchArray = argv
+targetBranchArray = Array.from(new Set(argv)) 
+
 /**
  *  执行异步任务，并模拟进度提示
  * @param {string} logMsg 
@@ -25,7 +26,7 @@ targetBranchArray = argv
  */
 async function doJobWithProgress(logMsg, ...funcParaArray){
   if(typeof this != 'function'){
-    throw new Error('doJobWithProgress 只能用于执行异步方法') 
+    throw 'doJobWithProgress 只能用于执行异步方法'
   }
   
   console.log(logMsg)
@@ -48,12 +49,6 @@ async function doJobWithProgress(logMsg, ...funcParaArray){
  * @param {*} targetBranch 
  */
 async function task_merge(workBranch, targetBranch){
-    // 检测 targetBranch 是否存在
-    const branchSummary = await simpleGit.branch()
-    if(!branchSummary.branches[targetBranch]) {
-      console.log(chalk.red(`分支:${targetBranch}不存在！`))
-      return
-    }
 
     try {
       await simpleGit.checkout(targetBranch)
@@ -70,7 +65,7 @@ async function task_merge(workBranch, targetBranch){
       await simpleGit.checkout(workBranch)
       console.log(chalk.green(` <<<<合并${workBranch}到${targetBranch}完成，工作分支已重置为${workBranch}`))
      } catch (error) {
-       console.log(chalk.red(`合并${workBranch}到${targetBranch}出错-->${error}`))
+       console.log(chalk.red(`合并${workBranch}到${targetBranch}出错`))
        throw error
     }
 }
@@ -83,11 +78,13 @@ async function task_push(){
     options.push(src_dist)
   })
 
-  simpleGit.push(options).then(() => {
-    console.log(chalk.green(`----push分支:${targetBranchArray}到origin`))
-  }).catch(error => {
-    console.log(chalk.red(`----push分支${targetBranchArray}到origin出错：error`))
-  })
+  try {
+    await doJobWithProgress.call(simpleGit.push, 
+      chalk.green(`push分支:${targetBranchArray}到origin`), ...options)
+  } catch (error){
+    console.log(chalk.red(`push分支${targetBranchArray}到origin出错`))
+    throw error
+  }
 }
 async function main() {
   let needStash = false
@@ -133,11 +130,10 @@ async function main() {
     }
     console.log(chalk.cyan(`>>>finshed, enjoy coding!`))
   } catch (error) {
+    console.log(chalk.red(`${error}`))
     if(needStash && await simpleGit.stash('show')){
       await simpleGit.stash(['pop'])
-      console.log(chalk.red(`eroor：${error},执行回滚操作`))
-    } else {
-      console.log(chalk.red(`error：${error}`))
+      console.log(chalk.green(`执行回滚操作......done!`))
     }
   }
 }
